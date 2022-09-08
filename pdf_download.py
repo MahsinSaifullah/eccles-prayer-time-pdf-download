@@ -9,6 +9,8 @@ from os.path import basename
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from email.mime.application import MIMEApplication
+from email.mime.base import MIMEBase
+from email import encoders
 import ssl
 
 from dotenv import load_dotenv
@@ -41,20 +43,25 @@ def email_pdf():
   second_reciever = 'asma30330@gmail.com'
   subject='Eccles prayer time'
   content = 'Eccles prayer timetable.'
+
   msg = MIMEMultipart()
   msg['From'] = email_sender_and_reciever
   msg['To'] = email_sender_and_reciever
   msg['Subject'] = subject
   body = MIMEText(content, 'plain')
   msg.attach(body)
-  with open(pdf_file, 'r', encoding='latin1') as f:
-    part = MIMEApplication(f.read(), Name=basename(pdf_file))
-    part['Content-Disposition'] = 'attachment; filename="{}"'.format(basename(pdf_file))
-    msg.attach(part)
+
+  binary_pdf = open(pdf_file, 'rb')
+  payload = MIMEBase('application', 'octate-stream', Name=pdf_file)
+  payload.set_payload((binary_pdf).read())
+  encoders.encode_base64(payload)
+  payload.add_header('Content-Decomposition', 'attachment', filename=pdf_file)
+  msg.attach(payload)
+  
   context = ssl.create_default_context()
   server = smtplib.SMTP_SSL('smtp.gmail.com', 465, context=context)
   server.login(email_sender_and_reciever, EMAIL_APP_PASSWORD)
-  server.send_message(msg, from_addr=email_sender_and_reciever, to_addrs=[email_sender_and_reciever, second_reciever])
+  server.send_message(msg, from_addr=email_sender_and_reciever, to_addrs=[email_sender_and_reciever])
 
  
 
