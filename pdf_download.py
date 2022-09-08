@@ -57,16 +57,13 @@ def email_pdf():
   encoders.encode_base64(payload)
   payload.add_header('Content-Decomposition', 'attachment', filename=pdf_file)
   msg.attach(payload)
-  
+
   context = ssl.create_default_context()
   server = smtplib.SMTP_SSL('smtp.gmail.com', 465, context=context)
   server.login(email_sender_and_reciever, EMAIL_APP_PASSWORD)
-  server.send_message(msg, from_addr=email_sender_and_reciever, to_addrs=[email_sender_and_reciever])
+  server.send_message(msg, from_addr=email_sender_and_reciever, to_addrs=[email_sender_and_reciever,second_reciever])
 
  
-
-
-
 
 download_pdf()
 email_pdf()
