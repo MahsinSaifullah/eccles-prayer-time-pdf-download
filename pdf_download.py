@@ -3,9 +3,9 @@ from quopri import encodestring
 import requests
 import os
 from bs4 import BeautifulSoup
-import datetime 
+import datetime
+from datetime import datetime as Datetime 
 import smtplib
-from os.path import basename
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from email.mime.application import MIMEApplication
@@ -22,12 +22,15 @@ EMAIL_APP_PASSWORD = os.environ.get('EMAIL_APP_PASSWORD')
 
 
 currentDate = datetime.date.today()
+current_month_text = Datetime.now().strftime('%h')
+current_year_full = Datetime.now().strftime('%Y')
 eccles_mosque_url = "https://ecclesmosque.org.uk/"
 response = requests.get(eccles_mosque_url)
 soup = BeautifulSoup(response.text, 'html.parser')
 download_button = soup.find("a",{"class": "em-timetable-download-button"})
 eccles_url = download_button.get('href')
 pdf_file = str(currentDate) + ".pdf"
+
 
 
 def download_pdf():
@@ -42,7 +45,7 @@ def email_pdf():
   email_sender_and_reciever= 'mahsinsaifullah@gmail.com'
   second_reciever = 'asma30330@gmail.com'
   subject='Eccles prayer time'
-  content = 'Eccles prayer timetable.'
+  content = f'Eccles prayer timetable - {current_month_text} {current_year_full}' 
 
   msg = MIMEMultipart()
   msg['From'] = email_sender_and_reciever
